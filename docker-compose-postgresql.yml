@@ -1,0 +1,35 @@
+name: PostgreSQL
+
+services:
+  postgresql:
+    image: postgres:${POSTGRES_VERSION-latest}
+    container_name: PostgreSQL
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-admin}
+      POSTGRES_DB: ${POSTGRES_DB-postgres}
+      TZ: ${TZ-Asia/Kolkata}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - postgresql
+    
+    env_file:
+      - .env
+
+networks:
+  postgresql:
+    driver: bridge
+    external: true
+
+volumes:
+  postgres_data:
