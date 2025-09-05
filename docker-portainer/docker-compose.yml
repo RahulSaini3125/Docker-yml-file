@@ -1,0 +1,16 @@
+name: Docker-Portainer
+
+services:
+  portainer:
+    image: portainer/portainer-ce:${PORTAINER_VERSION-latest}
+    container_name: Docker-Portainer
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - portainer
+networks:
+  portainer:
+    driver: bridge
+    external: true
