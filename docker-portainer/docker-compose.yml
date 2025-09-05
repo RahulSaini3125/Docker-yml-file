@@ -13,4 +13,3 @@ services:
 networks:
   portainer:
     driver: bridge
-    external: true
