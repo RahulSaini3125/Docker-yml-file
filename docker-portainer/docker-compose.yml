@@ -8,8 +8,15 @@ services:
       - 9000:9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
     networks:
       - portainer
+    restart: unless-stopped
+
 networks:
   portainer:
     driver: bridge
+
+volumes:
+  portainer_data:
+    driver: local
