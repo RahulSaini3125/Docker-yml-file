@@ -151,10 +151,10 @@ If your PostgreSQL server is running in a different Docker network, you'll need 
 ---
 
 <div align="center">
-  <p>Maintained by <a href="https://github.com/yourusername">Your GitHub Username</a></p>
+  <p>Maintained by <a href="https://github.com/RahulSaini3125">Rahul Saini</a></p>
   <p>
-    <a href="mailto:your.email@example.com">Contact</a> •
-    <a href="https://github.com/yourusername">GitHub</a>
+    <a href="mailto:rahulsaini5123@outlook.com">Contact</a> •
+    <a href="https://github.com/RahulSaini3125">GitHub</a>
   </p>
 </div>
 
