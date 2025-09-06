@@ -3,7 +3,7 @@ name: Docker-Portainer
 services:
   portainer:
     image: portainer/portainer-ce:${PORTAINER_VERSION-latest}
-    container_name: Docker-Portainer
+    container_name: Portainer
     ports:
       - 9000:9000
     volumes:
@@ -20,3 +20,4 @@ networks:
 volumes:
   portainer_data:
     driver: local
+    name: Portainer_data

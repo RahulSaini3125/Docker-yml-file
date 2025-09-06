@@ -21,14 +21,17 @@ services:
       start_period: 30s
     restart: unless-stopped
     networks:
-      - postgresql
+      - postgres_network
     
     env_file:
       - .env
 
 networks:
-  postgresql:
+  postgres_network:
     driver: bridge
+    external: true
 
 volumes:
   postgres_data:
+    name: PostgreSQL_data
+    driver: local

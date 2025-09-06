@@ -1,25 +1,27 @@
-name: Docker-Pgadmin
+name: Pgadmin
 
 services:
   pgadmin:
     image: dpage/pgadmin4:${PGADMIN_VERSION-latest}
-    container_name: Docker-Pgadmin
+    container_name: Pgadmin
     ports:
       - 8080:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - pgadmin_data:/data
     networks:
-      - pgadmin
+      - postgres_network
     restart: unless-stopped
     environment:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
 
 networks:
-  pgadmin:
+  postgres_network:
     driver: bridge
+    external: true
 
 volumes:
   pgadmin_data:
     driver: local
+    name: Pgadmin_data
