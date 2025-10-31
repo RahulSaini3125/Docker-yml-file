@@ -1,0 +1,128 @@
+name: All-Database
+
+services:
+  mysql:
+    image: mysql:${MYSQL_VERSION-latest}
+    container_name: MySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "127.0.0.1:3306:3306"  # Only bind to localhost
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - database-networks
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_PASSWORD}",'-u',"root"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  postgresql:
+    image: postgres:${POSTGRES_VERSION-latest}
+    container_name: PostgreSQL
+    ports:
+      - "127.0.0.1:5432:5432"  # Only bind to localhost
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      - database-networks
+
+  monogodb:
+    image: mongo:${MONGODB_VERSION}
+    container_name: MongoDB
+    ports:
+      - "127.0.0.1:27017:27017"  # Only bind to localhost
+    environment:
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      - database-networks
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  database-networks:
+    name: Database_Networks
+    driver: bridge
+    enable_ipv6: false
+    internal: false  # Allow external access for localhost connections
+    attachable: true  # Allows external containers to attach to this network
+    labels:
+      purpose: database-communication
+      environment: development
+    driver_opts:
+      com.docker.network.bridge.name: database_net
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"  # Bind to localhost only
+      com.docker.network.driver.mtu: 1450
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+          ip_range: 172.20.1.0/24  # Restrict IP range for better control
+
+volumes:
+  mysql-data:
+    name: MySQL_Data
+    driver: local
+    labels:
+      group: mysql
+      type: database
+      environment: development
+  postgres_data:
+    name: PostgreSQL_Data
+    driver: local
+    labels:
+      group: postgresql
+      type: database
+      environment: development
+  mongo_data:
+    name: MongoDB_Data
+    driver: local
+    labels:
+      group: mongodb
+      type: database
+      environment: development
