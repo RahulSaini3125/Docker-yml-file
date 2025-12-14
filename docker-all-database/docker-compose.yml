@@ -76,8 +76,34 @@ services:
       - database-networks
     volumes:
       - mongo_data:/data/db
+      - mongo_config:/data/configdb
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  
+  redis:
+    image: redis:${REDIS_VERSION-latest}
+    container_name: Redis
+    ports:
+      - "127.0.0.1:6379:6379"  # Redis can be accessed externally
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    networks:
+      - database-networks
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -124,5 +150,19 @@ volumes:
     driver: local
     labels:
       group: mongodb
+      type: database
+      environment: development
+  mongo_config:
+    name: MongoDB_Config
+    driver: local
+    labels:
+      group: mongodb
+      type: config
+      environment: development
+  redis_data:
+    name: Redis_Data
+    driver: local
+    labels:
+      group: redis
       type: database
       environment: development
